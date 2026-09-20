@@ -1,0 +1,60 @@
+# dependencies
+node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# next.js
+.next/
+/out/
+next-env.d.ts
+
+# production
+/build
+/dist
+
+# env and secrets — never commit API keys
+.env
+.env.*
+!.env.example
+*.pem
+*.p12
+*.pfx
+*.crt
+*.cer
+secrets/
+
+# debug and logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+*.log
+
+# typescript
+*.tsbuildinfo
+
+# testing
+/coverage
+
+# vercel / turbo
+.vercel
+.turbo
+
+# os
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# editors and local tooling
+.idea/
+.vscode/
+.cursor/
+*.swp
+*.swo
+*~
