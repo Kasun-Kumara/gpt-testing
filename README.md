@@ -81,40 +81,25 @@ chmod 600 .env.production
 # Edit .env.production with your Azure Foundry credentials
 ```
 
-7. **Verify SSH access** from your local machine:
+7. **Deploy on the VM:**
 
 ```bash
-ssh your-user@your-vm-ip
-```
-
-### Deploy from your local machine
-
-Set the target VM, then run the deploy script:
-
-```bash
-export DEPLOY_HOST=your-vm-ip
-export DEPLOY_USER=your-ssh-user
-# Optional overrides:
-# export DEPLOY_PATH=~/gpt-whiteboard
-# export DEPLOY_DOMAIN=whiteboard.knurdz.org
-
+cd ~/gpt-whiteboard
+chmod +x scripts/deploy.sh
 ./scripts/deploy.sh
 ```
 
 The script will:
 
-- Require a clean `main` branch locally
-- Run lint, tests, and build
-- Push to `origin/main` and record the exact commit SHA
-- SSH to the VM, clone or fast-forward the checkout, and verify the SHA matches
+- Pull the latest `main` branch from GitHub
 - Build a SHA-tagged Docker image and restart the stack
 - Verify the app container health and `https://whiteboard.knurdz.org/api/health`
 - Roll back to the previous image if the new release fails
 
-Skip local checks during iteration:
+Skip `git pull` if you already updated the checkout manually:
 
 ```bash
-SKIP_LOCAL_CHECKS=1 ./scripts/deploy.sh
+SKIP_GIT_PULL=1 ./scripts/deploy.sh
 ```
 
 ### Operations on the VM
