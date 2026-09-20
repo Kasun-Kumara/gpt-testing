@@ -42,6 +42,24 @@ require_var() {
   fi
 }
 
+ensure_npm() {
+  if command -v npm >/dev/null 2>&1; then
+    return 0
+  fi
+
+  export NVM_DIR="${NVM_DIR:-${HOME}/.nvm}"
+  if [[ -s "${NVM_DIR}/nvm.sh" ]]; then
+    # shellcheck disable=SC1091
+    source "${NVM_DIR}/nvm.sh"
+  fi
+
+  if command -v npm >/dev/null 2>&1; then
+    return 0
+  fi
+
+  fail "npm not found in PATH. Install Node.js, open a shell where nvm/fnm is loaded, or run with SKIP_LOCAL_CHECKS=1."
+}
+
 require_var DEPLOY_HOST
 require_var DEPLOY_USER
 
@@ -58,6 +76,7 @@ if [[ -n "$(git status --porcelain)" ]]; then
 fi
 
 if [[ "${SKIP_LOCAL_CHECKS}" != "1" ]]; then
+  ensure_npm
   log "Running local checks..."
   npm run lint
   npm run test
