@@ -12,7 +12,7 @@ import { HighlightOverlay } from "@/components/HighlightOverlay"
 import { LaserPointer } from "@/components/LaserPointer"
 import { TutorCanvas } from "@/components/TutorCanvas"
 import { describeAction } from "@/lib/tutor/actions"
-import { delay, statusForAction } from "@/lib/tutor/animation"
+import { delay, revealDrawnContent, statusForAction } from "@/lib/tutor/animation"
 import { submitTutorInput } from "@/lib/tutor/client"
 import { buildCanvasContext } from "@/lib/tutor/context"
 import { executeTutorActions } from "@/lib/tutor/executor"
@@ -227,6 +227,7 @@ export function SpeechWhiteboard() {
       }
     }
 
+    revealDrawnContent(currentEditor)
     recentActionsRef.current = [...recentActionsRef.current, ...descriptions].slice(-20)
   }, [])
 
@@ -433,11 +434,20 @@ export function SpeechWhiteboard() {
       peerRef.current = connection
 
       connection.addEventListener("track", (event) => {
-        if (!audioRef.current) {
+        if (event.track.kind !== "audio") {
+          event.track.enabled = false
+          event.track.stop()
           return
         }
-        audioRef.current.srcObject = new MediaStream([event.track])
-        void audioRef.current.play().catch(() => {
+
+        const audio = audioRef.current
+        if (!audio) {
+          return
+        }
+
+        audio.setAttribute("playsinline", "true")
+        audio.srcObject = new MediaStream([event.track])
+        void audio.play().catch(() => {
           setError("Allow audio playback to hear the tutor.")
         })
       })
@@ -518,7 +528,7 @@ export function SpeechWhiteboard() {
 
   return (
     <div className="flex h-svh min-h-0 flex-col overflow-hidden bg-background">
-      <audio ref={audioRef} autoPlay />
+      <audio ref={audioRef} autoPlay playsInline className="tutor-voice-audio" />
 
       <div className="tutor-stage min-h-0 flex-1">
         <TutorCanvas onMount={handleEditorMount} />
@@ -530,7 +540,7 @@ export function SpeechWhiteboard() {
         />
       </div>
 
-      <div className="z-20 shrink-0 border-t bg-card/95 p-4 text-card-foreground shadow-[0_-8px_24px_rgba(0,0,0,0.12)]">
+      <div className="relative z-20 max-h-[40svh] shrink-0 overflow-y-auto border-t bg-card/95 p-4 text-card-foreground shadow-[0_-8px_24px_rgba(0,0,0,0.12)]">
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-3">
           <div className="flex items-center justify-between gap-3">
             <div className="flex min-w-0 flex-col gap-1">

@@ -14,6 +14,7 @@ export function TutorCanvas({ onMount }: TutorCanvasProps) {
     <div className="tutor-canvas">
       <Tldraw
         persistenceKey={PERSISTENCE_KEY}
+        className="tldraw__editor"
         onMount={(editor) => {
           editor.user.updateUserPreferences({ colorScheme: 'dark' })
           onMount(editor)

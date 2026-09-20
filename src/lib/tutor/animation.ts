@@ -1,3 +1,4 @@
+import type { Editor } from 'tldraw'
 import type { TutorAction } from '@/lib/tutor/actions'
 import type { TutorStatus } from '@/types/tutor'
 
@@ -28,4 +29,28 @@ export async function delay(ms: number): Promise<void> {
 export async function runWithActionDelay<T>(fn: () => T | Promise<T>): Promise<T> {
   await delay(ACTION_DELAY_MS)
   return fn()
+}
+
+export function revealDrawnContent(editor: Editor) {
+  const bounds = editor.getCurrentPageBounds()
+  if (!bounds || bounds.w < 1 || bounds.h < 1) {
+    return
+  }
+
+  const viewport = editor.getViewportPageBounds()
+  if (viewport.w < 16 || viewport.h < 16) {
+    return
+  }
+
+  const fullyVisible =
+    bounds.x >= viewport.x &&
+    bounds.y >= viewport.y &&
+    bounds.x + bounds.w <= viewport.x + viewport.w &&
+    bounds.y + bounds.h <= viewport.y + viewport.h
+
+  if (fullyVisible) {
+    return
+  }
+
+  editor.zoomToBounds(bounds, { animation: { duration: 280 } })
 }

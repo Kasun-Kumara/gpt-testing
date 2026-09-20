@@ -131,15 +131,39 @@
 
 .tutor-stage {
   position: relative;
+  isolation: isolate;
   min-width: 0;
-  min-height: 0;
+  min-height: 12rem;
   flex: 1;
+  overflow: hidden;
+  transform: translateZ(0);
 }
 
 .tutor-canvas,
-.tutor-canvas .tldraw__editor {
+.tutor-canvas .tldraw__editor,
+.tutor-canvas .tl-container {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
+}
+
+/* Tailwind preflight sets `audio { display: block }`, which overrides the
+   UA rule that hides <audio> without controls. Once WebRTC attaches a
+   stream the element can grow and collapse the whiteboard. */
+.tutor-voice-audio {
+  position: fixed;
+  display: block !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .laser-pointer {
