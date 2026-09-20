@@ -21,6 +21,7 @@ import {
   getShapeMeta,
   resolveConnectableShapeId,
 } from '@/lib/tutor/selectors'
+import { TUTOR_DRAW_COLOR } from '@/lib/tutor/canvas-view'
 import { buildArrowShapeUpdate, buildGeoShapeUpdate, buildTextShapeUpdate } from '@/lib/tutor/update-props'
 import type { ExecutionResult, HighlightOverlayState, LaserOverlayState, ShapeMeta } from '@/types/tutor'
 
@@ -91,7 +92,7 @@ function createArrowBetweenShapes(
     arrowProps.labelPosition = 0.5
     arrowProps.font = 'draw'
     arrowProps.scale = 1
-    arrowProps.labelColor = options.color ?? 'black'
+    arrowProps.labelColor = options.color ?? TUTOR_DRAW_COLOR
   }
 
   editor.createShape({
@@ -166,8 +167,8 @@ function executeSingleAction(editor: Editor, action: TutorAction): ExecutionResu
           w: action.w,
           h: action.h,
           richText: labelText ? toRichText(labelText) : toRichText(''),
-          color: (action.color ?? 'black') as TLDefaultColorStyle,
-          labelColor: (action.color ?? 'black') as TLDefaultColorStyle,
+          color: (action.color ?? TUTOR_DRAW_COLOR) as TLDefaultColorStyle,
+          labelColor: (action.color ?? TUTOR_DRAW_COLOR) as TLDefaultColorStyle,
           fill: (action.fill ?? 'none') as TLDefaultFillStyle,
           dash: 'draw',
           size: 'm',
@@ -194,7 +195,7 @@ function executeSingleAction(editor: Editor, action: TutorAction): ExecutionResu
         meta: buildMeta(action),
         props: {
           richText: toRichText(action.text),
-          color: (action.color ?? 'black') as TLDefaultColorStyle,
+          color: (action.color ?? TUTOR_DRAW_COLOR) as TLDefaultColorStyle,
           size: action.size ?? 'm',
           font: 'draw',
           autoSize: true,
@@ -218,7 +219,7 @@ function executeSingleAction(editor: Editor, action: TutorAction): ExecutionResu
         y: minY,
         meta: buildMeta(action),
         props: {
-          color: (action.color ?? 'black') as TLDefaultColorStyle,
+          color: (action.color ?? TUTOR_DRAW_COLOR) as TLDefaultColorStyle,
           fill: 'none',
           dash: 'solid',
           size: 'm',
@@ -258,7 +259,7 @@ function executeSingleAction(editor: Editor, action: TutorAction): ExecutionResu
         y: action.y,
         meta: buildMeta(action),
         props: {
-          color: (action.color ?? 'black') as TLDefaultColorStyle,
+          color: (action.color ?? TUTOR_DRAW_COLOR) as TLDefaultColorStyle,
           fill: (isClosed ? (action.fill ?? 'solid') : 'none') as TLDefaultFillStyle,
           dash: 'solid',
           size: (action.size ?? 'm') as TLDefaultSizeStyle,

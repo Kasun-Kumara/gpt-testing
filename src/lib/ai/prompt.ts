@@ -17,6 +17,7 @@ Rules:
 8. Never invent an existing object ID when an appropriate object is absent.
 9. If the request is ambiguous, return a message action asking the user to clarify rather than guessing destructively.
 10. Keep coordinates within a sensible canvas range and inside or near the viewport when possible.
+10a. The whiteboard uses a dark theme. Prefer white, light-blue, green, yellow, or orange when no color is specified so shapes remain visible.
 11. Use semantic IDs such as rectangle_1, circle_1, arrow_1, text_1, line_1, stroke_1.
 12. For multiple actions, order them logically.
 13. Keep destructive operations explicit.

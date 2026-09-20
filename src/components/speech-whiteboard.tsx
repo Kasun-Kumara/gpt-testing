@@ -13,6 +13,7 @@ import { LaserPointer } from "@/components/LaserPointer"
 import { TutorCanvas } from "@/components/TutorCanvas"
 import { describeAction } from "@/lib/tutor/actions"
 import { delay, revealDrawnContent, statusForAction } from "@/lib/tutor/animation"
+import { fitCanvasToContent, syncEditorViewport } from "@/lib/tutor/canvas-view"
 import { submitTutorInput } from "@/lib/tutor/client"
 import { buildCanvasContext } from "@/lib/tutor/context"
 import { executeTutorActions } from "@/lib/tutor/executor"
@@ -138,6 +139,15 @@ export function SpeechWhiteboard() {
   const handleEditorMount = useCallback((mounted: Editor) => {
     editorRef.current = mounted
     setEditor(mounted)
+    mounted.updateInstanceState({ isFocusMode: false })
+  }, [])
+
+  const syncCanvasViewport = useCallback(() => {
+    const currentEditor = editorRef.current
+    const container = currentEditor?.getContainer().closest(".tutor-canvas")
+    if (currentEditor && container instanceof HTMLElement) {
+      syncEditorViewport(currentEditor, container)
+    }
   }, [])
 
   const setMicrophoneEnabled = useCallback((enabled: boolean) => {
@@ -228,6 +238,13 @@ export function SpeechWhiteboard() {
     }
 
     revealDrawnContent(currentEditor)
+    window.setTimeout(() => {
+      const container = currentEditor.getContainer().closest(".tutor-canvas")
+      if (container instanceof HTMLElement) {
+        syncEditorViewport(currentEditor, container)
+        fitCanvasToContent(currentEditor)
+      }
+    }, 320)
     recentActionsRef.current = [...recentActionsRef.current, ...descriptions].slice(-20)
   }, [])
 
@@ -379,6 +396,8 @@ export function SpeechWhiteboard() {
     handleLiveEventRef.current = (event: LiveEvent) => {
       if (event.type === "session.started") {
         setVoiceStatus("listening")
+        syncCanvasViewport()
+        editorRef.current?.updateInstanceState({ isFocusMode: false })
         return
       }
 
@@ -527,10 +546,10 @@ export function SpeechWhiteboard() {
   const canStart = liveConfigured !== false && tutorConfigured !== false
 
   return (
-    <div className="flex h-svh min-h-0 flex-col overflow-hidden bg-background">
+    <div className="tutor-shell bg-background">
       <audio ref={audioRef} autoPlay playsInline className="tutor-voice-audio" />
 
-      <div className="tutor-stage min-h-0 flex-1">
+      <div className="tutor-stage">
         <TutorCanvas onMount={handleEditorMount} />
         <LaserPointer editor={editor} laser={laser} onComplete={() => setLaser(null)} />
         <HighlightOverlay
@@ -540,7 +559,7 @@ export function SpeechWhiteboard() {
         />
       </div>
 
-      <div className="relative z-20 max-h-[40svh] shrink-0 overflow-y-auto border-t bg-card/95 p-4 text-card-foreground shadow-[0_-8px_24px_rgba(0,0,0,0.12)]">
+      <div className="tutor-controls relative z-20 max-h-[min(40svh,16rem)] overflow-y-auto border-t bg-card/95 p-4 text-card-foreground shadow-[0_-8px_24px_rgba(0,0,0,0.12)]">
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-3">
           <div className="flex items-center justify-between gap-3">
             <div className="flex min-w-0 flex-col gap-1">

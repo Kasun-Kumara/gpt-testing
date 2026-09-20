@@ -129,14 +129,18 @@
   }
 }
 
+.tutor-shell {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  height: 100svh;
+  overflow: hidden;
+}
+
 .tutor-stage {
   position: relative;
-  isolation: isolate;
   min-width: 0;
-  min-height: 12rem;
-  flex: 1;
+  min-height: 0;
   overflow: hidden;
-  transform: translateZ(0);
 }
 
 .tutor-canvas,
@@ -146,6 +150,15 @@
   inset: 0;
   width: 100%;
   height: 100%;
+}
+
+.tutor-canvas .tl-canvas {
+  content-visibility: visible;
+  contain: size layout style;
+}
+
+.tutor-canvas .tlui-layout {
+  min-height: 0;
 }
 
 /* Tailwind preflight sets `audio { display: block }`, which overrides the
