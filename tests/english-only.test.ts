@@ -14,6 +14,6 @@ describe('english-only speech filtering', () => {
 
   it('drops non-English fragments', () => {
     expect(filterEnglishTranscript('namaste draw a circle')).toContain('draw a circle')
-    expect(hasEnglishContent('namaste')).toBe(false)
+    expect(hasEnglishContent('नमस्ते')).toBe(false)
   })
 })

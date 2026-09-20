@@ -374,43 +374,45 @@ export function SpeechWhiteboard() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  handleLiveEventRef.current = (event: LiveEvent) => {
-    if (event.type === "session.started") {
-      setVoiceStatus("listening")
-      return
-    }
-
-    if (event.type === "session.input_transcript.delta" && event.delta) {
-      queueSpokenCommand(event.delta)
-      return
-    }
-
-    if (event.type === "session.output_transcript.delta" && event.delta) {
-      setAssistant((current) => `${current}${event.delta}`.replace(/\s+/g, " ").trim())
-      bumpUnmuteIdle()
-      return
-    }
-
-    if (event.type === "session.delegation.created" && event.delegation?.id) {
-      pendingDelegationRef.current = event.delegation.id
-      if (speechBufferRef.current.trim().length >= MIN_COMMAND_LENGTH) {
-        flushSpokenCommand(DELEGATION_FLUSH_MS)
+  useEffect(() => {
+    handleLiveEventRef.current = (event: LiveEvent) => {
+      if (event.type === "session.started") {
+        setVoiceStatus("listening")
+        return
       }
-      return
-    }
 
-    if (event.type === "error") {
-      setError(event.error?.message || "GPT Live returned an error.")
-      setVoiceStatus("error")
-      return
-    }
+      if (event.type === "session.input_transcript.delta" && event.delta) {
+        queueSpokenCommand(event.delta)
+        return
+      }
 
-    if (event.type === "session.closed") {
-      finalizedRef.current = true
-      cleanupVoice()
-      setVoiceStatus("idle")
+      if (event.type === "session.output_transcript.delta" && event.delta) {
+        setAssistant((current) => `${current}${event.delta}`.replace(/\s+/g, " ").trim())
+        bumpUnmuteIdle()
+        return
+      }
+
+      if (event.type === "session.delegation.created" && event.delegation?.id) {
+        pendingDelegationRef.current = event.delegation.id
+        if (speechBufferRef.current.trim().length >= MIN_COMMAND_LENGTH) {
+          flushSpokenCommand(DELEGATION_FLUSH_MS)
+        }
+        return
+      }
+
+      if (event.type === "error") {
+        setError(event.error?.message || "GPT Live returned an error.")
+        setVoiceStatus("error")
+        return
+      }
+
+      if (event.type === "session.closed") {
+        finalizedRef.current = true
+        cleanupVoice()
+        setVoiceStatus("idle")
+      }
     }
-  }
+  })
 
   async function startTalking() {
     if (voiceStatus === "connecting" || voiceStatus === "listening" || voiceStatus === "ending") {
