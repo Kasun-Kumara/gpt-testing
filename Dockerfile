@@ -4,6 +4,9 @@ ARG NODE_VERSION=22.14.0
 
 FROM node:${NODE_VERSION}-bookworm-slim AS base
 WORKDIR /app
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends libatomic1 \
+  && rm -rf /var/lib/apt/lists/*
 
 FROM base AS deps
 COPY package.json package-lock.json ./
